@@ -60,6 +60,8 @@ const List = mongoose.model("List", listSchema)
 
 
 app.get("/", function (req, res) {
+  
+  
 
   Item.find((err, results) => {
 
@@ -77,7 +79,7 @@ app.get("/", function (req, res) {
         listTitle: "Today",
         newListItems: results
       });
-
+      console.log(req.body.listName)
     }
   })
 
@@ -86,6 +88,7 @@ app.get("/", function (req, res) {
 app.post("/", function (req, res) {
   const itemName = req.body.newItem;
   const listName = req.body.list;
+  console.log(req.body.list)
 
   const item = new Item({
     name: itemName
@@ -115,7 +118,8 @@ app.post("/", function (req, res) {
 
 app.post("/delete", (req, res) => {
   const checkedItemId = req.body.checkbox
-  const listName = req.body.listName
+  const listNametest = req.body.listName
+  const listName = listNametest.slice(0, -1)
 
   if (listName === "Today"){
     Item.deleteOne({
@@ -125,15 +129,15 @@ app.post("/delete", (req, res) => {
         console.log(err)
       } else {
         console.log("item deleted")
+        res.redirect("/")
       }
-      res.redirect("/")
-  
     })
 
   } else {
     List.findOneAndUpdate({name: listName}, {$pull:{items:{_id: checkedItemId}}}, (err, foundList)=>{
       if (!err) {
-        res.redirect("/"+ listName)
+        res.redirect("/"+listName)
+        console.log(listName+".")
       } 
     })
 
